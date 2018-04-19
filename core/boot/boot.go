@@ -13,10 +13,10 @@ var (
 func init()  {
 	RunConfigInstance = RunConfig{}
 	//初始化服务器
-	newServer := server.MakeServer("http", []string{}, []string{}, ":8990")
+	server.MakeServer("http", []string{}, []string{}, ":8990")
 	//初始化配置
 	//newServer.AddUriMap()
-	RunConfigInstance.RunServer = newServer
+	RunConfigInstance.RunServer = server.NewServerConfigInstance
 	//运行服务器
 	RunConfigInstance.RunServer.RunServer()
 }
