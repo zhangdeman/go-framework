@@ -15,7 +15,13 @@ var (
 )
 
 func init() {
-
+	NewServerInstance = NewServer{}
+	NewServerConfigInstance = NewServerConfig{
+		scheme:"http",
+		allowIpList:[]string{},
+		allowMethod:[]string{},
+		funcMap:make(map[string]func(w http.ResponseWriter, r *http.Request)),
+	}
 }
 
 //config
@@ -31,7 +37,7 @@ type NewServerConfig struct {
  * 接口
  */
 type NewServerInterface interface {
-	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string)	//创建一个服务器
+	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer	//创建一个服务器
 	RunServer()	//运行服务器
 	AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request))	//增加一个请求map
 }
@@ -45,26 +51,27 @@ type NewServer struct {
 /**
  * 创建sever
  */
-func (newServer *NewServer) MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) {
+func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
 	NewServerConfigInstance.scheme = scheme
 	NewServerConfigInstance.allowIpList = allowIpList
 	NewServerConfigInstance.allowMethod = allowMethod
 	NewServerConfigInstance.listenPort = ":"+listenPort
 	mapFunc := make(map[string]func(w http.ResponseWriter, r *http.Request))
 	NewServerConfigInstance.funcMap = mapFunc
+	return NewServerInstance
 }
 
 /**
  * 增加新的请求map
  */
-func (newServer *NewServer) AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request))  {
+func (newServer NewServer) AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request))  {
 	NewServerConfigInstance.funcMap[uri] = dealFunc
 }
 
 /**
  * 运行server
  */
-func (newServer *NewServer) RunServer() {
+func (newServer NewServer) RunServer() {
 	fmt.Println("服务器监听端口 " + NewServerConfigInstance.listenPort)
 	for uri, method := range NewServerConfigInstance.funcMap{
 		fmt.Println("注册请求 : " + uri )
@@ -77,19 +84,19 @@ func (newServer *NewServer) RunServer() {
 
 }
 
-func (newServer *NewServer) ValidateRequestIp() {
+func (newServer NewServer) ValidateRequestIp() {
 
 }
 
-func (newServer *NewServer) ValidateRequestMethod() {
+func (newServer NewServer) ValidateRequestMethod() {
 
 }
 
 /**
  * 创建服务器
  */
-func MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) {
-	NewServerInstance.MakeServer(scheme, allowIpList, allowMethod, listenPort)
+func MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
+	return NewServerInstance.MakeServer(scheme, allowIpList, allowMethod, listenPort)
 }
 
 /**
