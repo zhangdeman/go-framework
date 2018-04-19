@@ -1,7 +1,7 @@
 package boot
 
 import (
-	"server"
+	"github.com/zhangdeman/go-framework/core/server"
 )
 
 var (
