@@ -16,7 +16,7 @@ func init()  {
 	server.MakeServer("http", []string{}, []string{}, ":8990")
 	//初始化配置
 	//newServer.AddUriMap()
-	RunConfigInstance.RunServer = server.NewServerConfigInstance
+	RunConfigInstance.RunServer = server.NewServerInstance
 	//运行服务器
 	RunConfigInstance.RunServer.RunServer()
 }
