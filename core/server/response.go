@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"fmt"
+	"encoding/json"
 )
 
 var (
@@ -37,7 +38,8 @@ func (resp DoResponse) ResponseData(w http.ResponseWriter, r *http.Request) {
 	uri := r.RequestURI
 	dealFunc := GetUriMap(uri)
 	data := dealFunc()
-	fmt.Fprint(w, data)
+	str, _ := json.Marshal(data)
+	fmt.Fprint(w, string(str))
 }
 
 func (resp DoResponse) GetDealFunc(uri string, server NewServerInterface) {

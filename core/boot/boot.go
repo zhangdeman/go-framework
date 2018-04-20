@@ -25,20 +25,6 @@ func init()  {
 }
 
 /**
- * 运行引导接口
- */
-type RunBootInterface interface {
-
-}
-
-/**
- * 运行引导结构体
- */
-type RunBoot struct {
-
-}
-
-/**
  * 运行之后的一些配置
  */
 type RunConfig struct {

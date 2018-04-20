@@ -20,7 +20,7 @@ func init() {
 		scheme:"http",
 		allowIpList:[]string{},
 		allowMethod:[]string{},
-		funcMap:make(map[string]func()interface{}),
+		funcMap:make(map[string]func()map[string]interface{}),
 	}
 }
 
@@ -30,7 +30,7 @@ type NewServerConfig struct {
 	allowIpList []string          //允许请求的ip列表
 	allowMethod []string          //允许的请求方法
 	listenPort  string            //监听的端口
-	funcMap     map[string]func() interface{} //监听的方法
+	funcMap     map[string]func() map[string]interface{} //监听的方法
 }
 
 /**
@@ -39,7 +39,7 @@ type NewServerConfig struct {
 type NewServerInterface interface {
 	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer	//创建一个服务器
 	RunServer()	//运行服务器
-	AddUriMap(uri string, dealFunc func() interface{})	//增加一个请求map
+	AddUriMap(uri string, dealFunc func() map[string]interface{})	//增加一个请求map
 }
 
 /**
@@ -56,7 +56,7 @@ func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allow
 	NewServerConfigInstance.allowIpList = allowIpList
 	NewServerConfigInstance.allowMethod = allowMethod
 	NewServerConfigInstance.listenPort = ":"+listenPort
-	mapFunc := make(map[string]func()interface{})
+	mapFunc := make(map[string]func()map[string]interface{})
 	NewServerConfigInstance.funcMap = mapFunc
 	return NewServerInstance
 }
@@ -64,14 +64,14 @@ func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allow
 /**
  * 增加新的请求map
  */
-func (newServer NewServer) AddUriMap(uri string, dealFunc func() interface{})  {
+func (newServer NewServer) AddUriMap(uri string, dealFunc func() map[string]interface{})  {
 	NewServerConfigInstance.funcMap[uri] = dealFunc
 }
 
 /**
  * 增加新的请求map
  */
-func (newServer NewServer) GetUriMap(uri string) func() interface{} {
+func (newServer NewServer) GetUriMap(uri string) func() map[string]interface{} {
 	return NewServerConfigInstance.funcMap[uri]
 }
 
@@ -116,10 +116,10 @@ func RunServer()  {
 /**
  * 增加请求map
  */
-func AddUriMap(uri string, dealFunc func() interface{}) {
+func AddUriMap(uri string, dealFunc func() map[string]interface{}) {
 	NewServerInstance.AddUriMap(uri, dealFunc)
 }
 
-func GetUriMap(uri string) func()interface{} {
+func GetUriMap(uri string) func()map[string]interface{} {
 	return NewServerConfigInstance.funcMap[uri]
 }
