@@ -20,7 +20,7 @@ func init() {
 		scheme:"http",
 		allowIpList:[]string{},
 		allowMethod:[]string{},
-		funcMap:make(map[string]func(w http.ResponseWriter, r *http.Request)),
+		funcMap:make(map[string]func()interface{}),
 	}
 }
 
@@ -30,7 +30,7 @@ type NewServerConfig struct {
 	allowIpList []string          //允许请求的ip列表
 	allowMethod []string          //允许的请求方法
 	listenPort  string            //监听的端口
-	funcMap     map[string]func(w http.ResponseWriter, r *http.Request) //监听的方法
+	funcMap     map[string]func() interface{} //监听的方法
 }
 
 /**
@@ -39,7 +39,7 @@ type NewServerConfig struct {
 type NewServerInterface interface {
 	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer	//创建一个服务器
 	RunServer()	//运行服务器
-	AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request))	//增加一个请求map
+	AddUriMap(uri string, dealFunc func() interface{})	//增加一个请求map
 }
 
 /**
@@ -56,7 +56,7 @@ func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allow
 	NewServerConfigInstance.allowIpList = allowIpList
 	NewServerConfigInstance.allowMethod = allowMethod
 	NewServerConfigInstance.listenPort = ":"+listenPort
-	mapFunc := make(map[string]func(w http.ResponseWriter, r *http.Request))
+	mapFunc := make(map[string]func()interface{})
 	NewServerConfigInstance.funcMap = mapFunc
 	return NewServerInstance
 }
@@ -64,8 +64,15 @@ func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allow
 /**
  * 增加新的请求map
  */
-func (newServer NewServer) AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request))  {
+func (newServer NewServer) AddUriMap(uri string, dealFunc func() interface{})  {
 	NewServerConfigInstance.funcMap[uri] = dealFunc
+}
+
+/**
+ * 增加新的请求map
+ */
+func (newServer NewServer) GetUriMap(uri string) func() interface{} {
+	return NewServerConfigInstance.funcMap[uri]
 }
 
 /**
@@ -73,9 +80,9 @@ func (newServer NewServer) AddUriMap(uri string, dealFunc func(w http.ResponseWr
  */
 func (newServer NewServer) RunServer() {
 	fmt.Println("服务器监听端口 " + NewServerConfigInstance.listenPort)
-	for uri, method := range NewServerConfigInstance.funcMap{
+	for uri, _ := range NewServerConfigInstance.funcMap{
 		fmt.Println("注册请求 : " + uri )
-		http.HandleFunc(uri, method)
+		http.HandleFunc(uri, ResponseData)
 	}
 	err := http.ListenAndServe(NewServerConfigInstance.listenPort, nil)
 	if err != nil {
@@ -109,6 +116,10 @@ func RunServer()  {
 /**
  * 增加请求map
  */
-func AddUriMap(uri string, dealFunc func(w http.ResponseWriter, r *http.Request)) {
+func AddUriMap(uri string, dealFunc func() interface{}) {
 	NewServerInstance.AddUriMap(uri, dealFunc)
+}
+
+func GetUriMap(uri string) func()interface{} {
+	return NewServerConfigInstance.funcMap[uri]
 }

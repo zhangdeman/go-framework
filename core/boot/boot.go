@@ -3,6 +3,7 @@ package boot
 import (
 	"github.com/zhangdeman/go-framework/core/server"
 	"fmt"
+	"test"
 )
 
 var (
@@ -17,7 +18,7 @@ func init()  {
 	newServer := server.MakeServer("http", []string{}, []string{}, "8990")
 	fmt.Println(newServer)
 	//初始化配置
-	//newServer.AddUriMap()
+	newServer.AddUriMap("/test",test.TestMethod)
 	RunConfigInstance.RunServer = newServer
 	//运行服务器
 	RunConfigInstance.RunServer.RunServer()
