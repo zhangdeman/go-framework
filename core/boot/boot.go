@@ -20,6 +20,12 @@ func init()  {
 	//初始化配置
 	newServer.AddUriMap("/test",test.TestMethod)
 	RunConfigInstance.RunServer = newServer
+}
+
+/**
+ * 运行服务器
+ */
+func RunServer()  {
 	//运行服务器
 	RunConfigInstance.RunServer.RunServer()
 }
