@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"encoding/json"
+	"strings"
 )
 
 var supportCmd []string
@@ -188,6 +189,11 @@ func Run(projectName string)  {
 
 func main()  {
 	cmdParams := os.Args
+	cmdParamsLen := len(cmdParams)
+	if(cmdParamsLen < 2) {
+		fmt.Println("请选择执行的操作,支持的操作 : "+strings.Join(supportCmd, ","))
+		os.Exit(-11)
+	}
 	cmd := cmdParams[1]
 	switch cmd {
 	case "create_project":
