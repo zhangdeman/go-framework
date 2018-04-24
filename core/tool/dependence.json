@@ -1,0 +1,4 @@
+{
+    "yaml" : "gopkg.in/yaml.v2",
+    "framework" : "github.com/zhangdeman/go-framework/core"
+}

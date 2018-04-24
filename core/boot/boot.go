@@ -3,7 +3,7 @@ package boot
 import (
 	"github.com/zhangdeman/go-framework/core/server"
 	"fmt"
-	"controler"
+	"controller"
 )
 
 var (
