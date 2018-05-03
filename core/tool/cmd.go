@@ -115,6 +115,7 @@ func CreateProject()  {
 		"src/route",
 		"src/controller",
 		"src/model",
+		"src/router",
 	}
 
 	dirLen := len(needCreateDirList)
@@ -168,6 +169,12 @@ func CreateProject()  {
 
 	//TestController
 	err = WriteFile("tpl/TestController.go.tpl", projectPath+"/src/controller/TestController.go")
+	if err != nil {
+		os.Exit(-7)
+	}
+
+	//route.go
+	err = WriteFile("tpl/route.go.tpl", projectPath+"/src/route/route.go")
 	if err != nil {
 		os.Exit(-7)
 	}
