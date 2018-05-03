@@ -10,7 +10,7 @@ import (
 
 func init()  {
 	//注册配置文件路径
-	conf.LoadConfigPath("/Users/didi/zhangdeman/test-framework/src/config")
+	conf.LoadConfigPath("./src/config")
 	data, _ := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
 
 	value := reflect.ValueOf(data)
