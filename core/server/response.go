@@ -41,6 +41,7 @@ func (resp DoResponse) ResponseData(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("请求uri : " + uri)
 	dealFunc, err := GetUriMap(uri)
 	if nil != err {
+		fmt.Println("未注册请求 : 404")
 		//未获取到请求map
 		w.WriteHeader(404)
 	} else {
