@@ -27,9 +27,9 @@ func init()  {
 /**
  * 运行服务器
  */
-func RunServer()  {
+func RunServer(configPath string)  {
 	//运行服务器
-	RunConfigInstance.RunServer.RunServer()
+	RunConfigInstance.RunServer.RunServer(configPath)
 }
 
 /**

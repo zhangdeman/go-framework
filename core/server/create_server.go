@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"errors"
+	"github.com/zhangdeman/go-framework/core/conf"
+	"os"
+	conf_struct "config/conf_struct"
 )
 
 /**
@@ -21,6 +24,7 @@ func init() {
 		scheme:"http",
 		allowIpList:[]string{},
 		allowMethod:[]string{},
+		env:"",
 		funcMap:make(map[string] func()map[string]interface{}),
 	}
 }
@@ -31,6 +35,7 @@ type NewServerConfig struct {
 	allowIpList []string          //允许请求的ip列表
 	allowMethod []string          //允许的请求方法
 	listenPort  string            //监听的端口
+	env 		string			  //运行环境
 	funcMap     map[string]func() map[string]interface{} //监听的方法
 }
 
@@ -39,7 +44,7 @@ type NewServerConfig struct {
  */
 type NewServerInterface interface {
 	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer	//创建一个服务器
-	RunServer()	//运行服务器
+	RunServer(configPath string)	//运行服务器
 	AddUriMap(uri string, dealFunc func() map[string]interface{})	//增加一个请求map
 }
 
@@ -79,13 +84,25 @@ func (newServer NewServer) GetUriMap(uri string) func() map[string]interface{} {
 /**
  * 运行server
  */
-func (newServer NewServer) RunServer() {
+func (newServer NewServer) RunServer(configPath string) {
+	//加载配置文件
+	conf.LoadConfigPath(configPath)
+	config, err := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
+	if nil != err {
+		fmt.Println("配置文件 base.yaml 加载失败",err)
+		os.Exit(-1)
+	}
+	envConfig := conf_struct.GetBaseYamlConfig(config)
+	NewServerConfigInstance.env = envConfig.Env
+	fmt.Println("设置运行环境 : "+NewServerConfigInstance.env)
+
+
 	fmt.Println("服务器监听端口 " + NewServerConfigInstance.listenPort)
 	for uri, _ := range NewServerConfigInstance.funcMap{
 		fmt.Println("注册请求 : " + uri )
 		http.HandleFunc(uri, ResponseData)
 	}
-	err := http.ListenAndServe(NewServerConfigInstance.listenPort, nil)
+	err = http.ListenAndServe(NewServerConfigInstance.listenPort, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -110,8 +127,8 @@ func MakeServer(scheme string, allowIpList []string, allowMethod []string, liste
 /**
  * 运行服务器
  */
-func RunServer()  {
-	NewServerInstance.RunServer()
+func RunServer(configPath string)  {
+	NewServerInstance.RunServer(configPath)
 }
 
 /**

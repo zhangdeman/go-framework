@@ -3,7 +3,7 @@ package conf
 import (
 	"io/ioutil"
 	"fmt"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 type ConfigConf struct {
 	configPath    string                 //配置文件存储路径
@@ -53,7 +53,6 @@ func (c Config) LoadConfig(configFileName string, data interface{}) (interface{}
 	if !ok {
 		//配置没加载过，进行加载，已加载过，不作任何处理
 		yamlFile, err = ioutil.ReadFile(ConfigConfInstance.configPath+"/"+configFileName)
-		fmt.Println(string(yamlFile))
 		if err != nil {
 			fmt.Println("load config error", err)
 			return nil, err
