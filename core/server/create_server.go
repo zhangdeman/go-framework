@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"errors"
 )
 
 /**
@@ -20,7 +21,7 @@ func init() {
 		scheme:"http",
 		allowIpList:[]string{},
 		allowMethod:[]string{},
-		funcMap:make(map[string]func()map[string]interface{}),
+		funcMap:make(map[string] func()map[string]interface{}),
 	}
 }
 
@@ -120,6 +121,10 @@ func AddUriMap(uri string, dealFunc func() map[string]interface{}) {
 	NewServerInstance.AddUriMap(uri, dealFunc)
 }
 
-func GetUriMap(uri string) func()map[string]interface{} {
-	return NewServerConfigInstance.funcMap[uri]
+func GetUriMap(uri string) (func()map[string]interface{}, error) {
+	if _, ok := NewServerConfigInstance.funcMap[uri]; ok {
+		//存在
+		return NewServerConfigInstance.funcMap[uri], nil
+	}
+	return nil,errors.New("请求未注册")
 }

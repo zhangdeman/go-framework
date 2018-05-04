@@ -9,6 +9,7 @@ import (
 var (
 	ResponseInstance Response
 	DoResponseInstance DoResponseInterface
+	ShowData interface{}
 )
 
 type DoResponseInterface interface{
@@ -18,6 +19,7 @@ type DoResponseInterface interface{
 type Response struct {
 	w http.ResponseWriter
 	r *http.Request
+	data interface{}
 }
 
 
@@ -36,10 +38,18 @@ func init()  {
 
 func (resp DoResponse) ResponseData(w http.ResponseWriter, r *http.Request) {
 	uri := r.RequestURI
-	dealFunc := GetUriMap(uri)
-	data := dealFunc()
-	str, _ := json.Marshal(data)
-	fmt.Fprint(w, string(str))
+	fmt.Println("请求uri : " + uri)
+	dealFunc, err := GetUriMap(uri)
+	if nil != err {
+		//未获取到请求map
+		w.WriteHeader(404)
+	} else {
+		ShowData = dealFunc()
+		r.Body.Close()
+		str, _ := json.Marshal(ShowData)
+		fmt.Fprint(w, string(str))
+	}
+
 }
 
 func (resp DoResponse) GetDealFunc(uri string, server NewServerInterface) {
