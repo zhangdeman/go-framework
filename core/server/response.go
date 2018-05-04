@@ -48,6 +48,7 @@ func (resp DoResponse) ResponseData(w http.ResponseWriter, r *http.Request) {
 		ShowData = dealFunc()
 		r.Body.Close()
 		str, _ := json.Marshal(ShowData)
+		fmt.Println("响应数据 : ", string(str))
 		fmt.Fprint(w, string(str))
 	}
 
