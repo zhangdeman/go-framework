@@ -1,36 +1,34 @@
 package server
 
 import (
-	"net/http"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"net/http"
 )
 
 var (
-	ResponseInstance Response
+	ResponseInstance   Response
 	DoResponseInstance DoResponseInterface
-	ShowData interface{}
+	ShowData           interface{}
 )
 
-type DoResponseInterface interface{
+type DoResponseInterface interface {
 	ResponseData(w http.ResponseWriter, r *http.Request)
 }
 
 type Response struct {
-	w http.ResponseWriter
-	r *http.Request
+	w    http.ResponseWriter
+	r    *http.Request
 	data interface{}
 }
-
 
 /**
  * 响应结构体
  */
 type DoResponse struct {
-
 }
 
-func init()  {
+func init() {
 	ResponseInstance = Response{}
 	DoResponseInstance = DoResponse{}
 	//ResponseData()
@@ -58,6 +56,6 @@ func (resp DoResponse) GetDealFunc(uri string, server NewServerInterface) {
 	fmt.Fprint(ResponseInstance.w, []string{})
 }
 
-func ResponseData(w http.ResponseWriter, r *http.Request)  {
+func ResponseData(w http.ResponseWriter, r *http.Request) {
 	DoResponseInstance.ResponseData(w, r)
 }

@@ -1,19 +1,20 @@
 package conf
 
 import (
-	"io/ioutil"
 	"fmt"
 	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
 )
+
 type ConfigConf struct {
-	configPath    string                 //配置文件存储路径
-	hasLoadConfigMap map[string][]byte	//已加载配置文件
+	configPath       string            //配置文件存储路径
+	hasLoadConfigMap map[string][]byte //已加载配置文件
 }
 
 type ConfigInterface interface {
-	LoadConfigPath(configPath string) //加载配置文件
-	LoadConfig(configName string, data interface{}) (interface{}, error)     //配置文件路径下必须有base.yaml配置文件,定义基础公用的配置
-	HasLoadConfig(fileName string) ([]byte, bool)	//获取已加载配置文件
+	LoadConfigPath(configPath string)                                    //加载配置文件
+	LoadConfig(configName string, data interface{}) (interface{}, error) //配置文件路径下必须有base.yaml配置文件,定义基础公用的配置
+	HasLoadConfig(fileName string) ([]byte, bool)                        //获取已加载配置文件
 }
 
 type Config struct {
@@ -29,8 +30,8 @@ var (
  */
 func init() {
 	ConfigConfInstance = ConfigConf{
-		configPath:"",
-		hasLoadConfigMap:make(map[string][]byte),
+		configPath:       "",
+		hasLoadConfigMap: make(map[string][]byte),
 	}
 	ConfigInstance = Config{}
 }
@@ -45,20 +46,20 @@ func (c Config) LoadConfigPath(configPath string) {
 /**
  * 加载公共配置文件
  */
-func (c Config) LoadConfig(configFileName string, data interface{}) (interface{},error) {
+func (c Config) LoadConfig(configFileName string, data interface{}) (interface{}, error) {
 	var yamlFile []byte
 	var err error
 	var ok bool
 	yamlFile, ok = c.HasLoadConfig(configFileName)
 	if !ok {
 		//配置没加载过，进行加载，已加载过，不作任何处理
-		yamlFile, err = ioutil.ReadFile(ConfigConfInstance.configPath+"/"+configFileName)
+		yamlFile, err = ioutil.ReadFile(ConfigConfInstance.configPath + "/" + configFileName)
 		if err != nil {
 			fmt.Println("load config error", err)
 			return nil, err
 		}
 		ConfigConfInstance.hasLoadConfigMap[configFileName] = yamlFile
-		err := yaml.Unmarshal(yamlFile,data)
+		err := yaml.Unmarshal(yamlFile, data)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +70,7 @@ func (c Config) LoadConfig(configFileName string, data interface{}) (interface{}
 /**
  * 是否已加载配置文件
  */
-func (c Config) HasLoadConfig(fileName string) ([]byte, bool)  {
+func (c Config) HasLoadConfig(fileName string) ([]byte, bool) {
 	yamlFile, ok := ConfigConfInstance.hasLoadConfigMap[fileName]
 	if ok {
 		return yamlFile, ok

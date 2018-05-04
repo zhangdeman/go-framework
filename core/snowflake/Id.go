@@ -8,18 +8,18 @@ import (
 )
 
 var (
-	GlobalLogId int64 //全局logId
+	GlobalLogId      int64 //全局logId
 	IdWorkerInstance *IdWorker
 )
 
-func init()  {
+func init() {
 	Id, err := NewIdWorker(1)
 	if nil != err {
 		fmt.Println("获取snowflake实例失败")
 	}
 
 	IdWorkerInstance = Id
-	GlobalLogId , _ = IdWorkerInstance.nextId()
+	GlobalLogId, _ = IdWorkerInstance.nextId()
 }
 
 const (
@@ -97,7 +97,7 @@ func (id *IdWorker) NextId() (int64, error) {
 }
 
 // NextId get a snowflake id.
-func (id *IdWorker) SetNextId(){
+func (id *IdWorker) SetNextId() {
 	globaId, _ := id.NextId()
 	GlobalLogId = globaId
 }

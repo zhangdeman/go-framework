@@ -1,25 +1,23 @@
 package server
 
 type ClientRequestInterface interface {
-	
 }
 
 type ClientRequestInfo struct {
-	method string	//请求方法
-} 
+	method string //请求方法
+}
 
 var (
 	ClientRequestInfoInstance ClientRequestInfo
-	ClientRequestInstance ClientRequest
+	ClientRequestInstance     ClientRequest
 )
 
-func init()  {
+func init() {
 	ClientRequestInfoInstance = ClientRequestInfo{}
 	ClientRequestInstance = ClientRequest{}
 }
 
 type ClientRequest struct {
-	
 }
 
 func (client ClientRequest) RequestMethod() {

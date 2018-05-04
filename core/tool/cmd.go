@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
-	"bytes"
-	"io/ioutil"
-	"encoding/json"
 	"strings"
 )
 
 var supportCmd []string
 
-func init()  {
+func init() {
 	supportCmd = []string{
 		"create_project",
 		"create_config",
@@ -28,7 +28,7 @@ var createProjectConfig map[string]string
 /**
  * 创建一个 go 项目
  */
-func CreateProject()  {
+func CreateProject() {
 	createProjectConfig = make(map[string]string)
 
 	remindMsg := make(map[string]string)
@@ -53,8 +53,8 @@ func CreateProject()  {
 		createProjectConfig[key] = string(data)
 	}
 
-	storePath := createProjectConfig["store_path"]	//存储路径
-	projectPath := storePath+"/"+createProjectConfig["project_name"]	//项目路径
+	storePath := createProjectConfig["store_path"]                       //存储路径
+	projectPath := storePath + "/" + createProjectConfig["project_name"] //项目路径
 
 	//创建目录
 	var err error
@@ -63,9 +63,9 @@ func CreateProject()  {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	fmt.Println("创建项目存储目录 : "+ storePath + " 成功! ")
+	fmt.Println("创建项目存储目录 : " + storePath + " 成功! ")
 	//创建项目
-	_, err = ExecShell("cd "+storePath)
+	_, err = ExecShell("cd " + storePath)
 	if err != nil {
 		fmt.Println("无法切换至项目存储目录")
 		os.Exit(-2)
@@ -94,10 +94,10 @@ func CreateProject()  {
 	          |-- controller  业务入口控制器
 	          |-- model   模型层
 		mian.go 入口文件
-	 */
+	*/
 	//初始化项目结构
 	//切换至项目目录
-	_, err = ExecShell("cd "+projectPath)
+	_, err = ExecShell("cd " + projectPath)
 
 	//创建描述文件
 	descFile, err := os.OpenFile("README.md", os.O_RDWR|os.O_CREATE, 0766)
@@ -128,7 +128,7 @@ func CreateProject()  {
 	}
 
 	//导入GOPATH
-	_,err = ExecShell("export GOPATH="+projectPath)
+	_, err = ExecShell("export GOPATH=" + projectPath)
 	if err != nil {
 		fmt.Println("导入GOPATH失败")
 		os.Exit(-6)
@@ -142,9 +142,9 @@ func CreateProject()  {
 		dep, _ := ioutil.ReadAll(dependence)
 		var depMap map[string]string
 		json.Unmarshal(dep, &depMap)
-		for key, addr := range depMap{
-			fmt.Print("解决依赖 "+key +" : ")
-			ExecShell("go get "+addr)
+		for key, addr := range depMap {
+			fmt.Print("解决依赖 " + key + " : ")
+			ExecShell("go get " + addr)
 			fmt.Println("done")
 		}
 	}
@@ -183,22 +183,22 @@ func CreateProject()  {
 
 }
 
-func CreateConfig(projectPath string)  {
+func CreateConfig(projectPath string) {
 
 }
 
 /**
  * 运行一个项目
  */
-func Run(projectName string)  {
+func Run(projectName string) {
 
 }
 
-func main()  {
+func main() {
 	cmdParams := os.Args
 	cmdParamsLen := len(cmdParams)
-	if(cmdParamsLen < 2) {
-		fmt.Println("请选择执行的操作,支持的操作 : "+strings.Join(supportCmd, ","))
+	if cmdParamsLen < 2 {
+		fmt.Println("请选择执行的操作,支持的操作 : " + strings.Join(supportCmd, ","))
 		os.Exit(-11)
 	}
 	cmd := cmdParams[1]
@@ -207,12 +207,12 @@ func main()  {
 		CreateProject()
 		break
 	default:
-		fmt.Println("不支持命令 : "+cmd)
+		fmt.Println("不支持命令 : " + cmd)
 	}
 }
 
 //阻塞式的执行外部shell命令的函数,等待执行完毕并返回标准输出
-func ExecShell(s string) (string, error){
+func ExecShell(s string) (string, error) {
 	//函数返回一个*Cmd，用于使用给出的参数执行name指定的程序
 	cmd := exec.Command("/bin/bash", "-c", s)
 
@@ -237,13 +237,13 @@ func WriteFile(tplFile string, targetFile string) error {
 		return err
 	}
 
-	content , _ := ioutil.ReadAll(contentFile)
+	content, _ := ioutil.ReadAll(contentFile)
 
 	if err != nil {
 		fmt.Println(targetFile + "入口文件创建失败!")
 		return err
 	}
-	err = ioutil.WriteFile(targetFile,content, os.ModePerm)
+	err = ioutil.WriteFile(targetFile, content, os.ModePerm)
 	if err != nil {
 		fmt.Println(targetFile + "入口文件创建失败")
 		return err
