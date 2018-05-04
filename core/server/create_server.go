@@ -21,22 +21,22 @@ var (
 func init() {
 	NewServerInstance = NewServer{}
 	NewServerConfigInstance = NewServerConfig{
-		scheme:      "http",
-		allowIpList: []string{},
-		allowMethod: []string{},
-		env:         "",
-		funcMap:     make(map[string]func() map[string]interface{}),
+		Scheme:      "http",
+		AllowIpList: []string{},
+		AllowMethod: []string{},
+		Env:         "",
+		FuncMap:     make(map[string]func() map[string]interface{}),
 	}
 }
 
 //config
 type NewServerConfig struct {
-	scheme      string                                   //请求协议
-	allowIpList []string                                 //允许请求的ip列表
-	allowMethod []string                                 //允许的请求方法
-	listenPort  string                                   //监听的端口
-	env         string                                   //运行环境
-	funcMap     map[string]func() map[string]interface{} //监听的方法
+	Scheme      string                                   //请求协议
+	AllowIpList []string                                 //允许请求的ip列表
+	AllowMethod []string                                 //允许的请求方法
+	ListenPort  string                                   //监听的端口
+	Env         string                                   //运行环境
+	FuncMap     map[string]func() map[string]interface{} //监听的方法
 }
 
 /**
@@ -58,12 +58,12 @@ type NewServer struct {
  * 创建sever
  */
 func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
-	NewServerConfigInstance.scheme = scheme
-	NewServerConfigInstance.allowIpList = allowIpList
-	NewServerConfigInstance.allowMethod = allowMethod
-	NewServerConfigInstance.listenPort = ":" + listenPort
+	NewServerConfigInstance.Scheme = scheme
+	NewServerConfigInstance.AllowIpList = allowIpList
+	NewServerConfigInstance.AllowMethod = allowMethod
+	NewServerConfigInstance.ListenPort = ":" + listenPort
 	mapFunc := make(map[string]func() map[string]interface{})
-	NewServerConfigInstance.funcMap = mapFunc
+	NewServerConfigInstance.FuncMap = mapFunc
 	return NewServerInstance
 }
 
@@ -71,14 +71,14 @@ func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allow
  * 增加新的请求map
  */
 func (newServer NewServer) AddUriMap(uri string, dealFunc func() map[string]interface{}) {
-	NewServerConfigInstance.funcMap[uri] = dealFunc
+	NewServerConfigInstance.FuncMap[uri] = dealFunc
 }
 
 /**
  * 增加新的请求map
  */
 func (newServer NewServer) GetUriMap(uri string) func() map[string]interface{} {
-	return NewServerConfigInstance.funcMap[uri]
+	return NewServerConfigInstance.FuncMap[uri]
 }
 
 /**
@@ -93,15 +93,15 @@ func (newServer NewServer) RunServer(configPath string) {
 		os.Exit(-1)
 	}
 	envConfig := conf_struct.GetBaseYamlConfig(config)
-	NewServerConfigInstance.env = envConfig.Env
-	fmt.Println("设置运行环境 : " + NewServerConfigInstance.env)
+	NewServerConfigInstance.Env = envConfig.Env
+	fmt.Println("设置运行环境 : " + NewServerConfigInstance.Env)
 
-	fmt.Println("服务器监听端口 " + NewServerConfigInstance.listenPort)
-	for uri, _ := range NewServerConfigInstance.funcMap {
+	fmt.Println("服务器监听端口 " + NewServerConfigInstance.ListenPort)
+	for uri, _ := range NewServerConfigInstance.FuncMap {
 		fmt.Println("注册请求 : " + uri)
 		http.HandleFunc(uri, ResponseData)
 	}
-	err = http.ListenAndServe(NewServerConfigInstance.listenPort, nil)
+	err = http.ListenAndServe(NewServerConfigInstance.ListenPort, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -138,9 +138,9 @@ func AddUriMap(uri string, dealFunc func() map[string]interface{}) {
 }
 
 func GetUriMap(uri string) (func() map[string]interface{}, error) {
-	if _, ok := NewServerConfigInstance.funcMap[uri]; ok {
+	if _, ok := NewServerConfigInstance.FuncMap[uri]; ok {
 		//存在
-		return NewServerConfigInstance.funcMap[uri], nil
+		return NewServerConfigInstance.FuncMap[uri], nil
 	}
 	return nil, errors.New("请求未注册")
 }
