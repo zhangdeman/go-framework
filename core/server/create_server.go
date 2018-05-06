@@ -43,7 +43,7 @@ type NewServerConfig struct {
  * 接口
  */
 type NewServerInterface interface {
-	MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer //创建一个服务器
+	MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer //创建一个服务器
 	RunServer(configPath string)                                                                       //运行服务器
 	AddUriMap(uri string, dealFunc func() map[string]interface{})                                      //增加一个请求map
 }
@@ -57,13 +57,23 @@ type NewServer struct {
 /**
  * 创建sever
  */
-func (newServer NewServer) MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
+func (newServer NewServer) MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
 	NewServerConfigInstance.Scheme = scheme
 	NewServerConfigInstance.AllowIpList = allowIpList
 	NewServerConfigInstance.AllowMethod = allowMethod
 	NewServerConfigInstance.ListenPort = ":" + listenPort
 	mapFunc := make(map[string]func() map[string]interface{})
 	NewServerConfigInstance.FuncMap = mapFunc
+
+	//设置运行环境
+	conf.LoadConfigPath(configPath)
+	envConfig , err := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
+	if nil != err {
+		fmt.Println("base..yaml配置初始化失败", err)
+		os.Exit(-1)
+	}
+	env := conf_struct.GetBaseYamlConfig(envConfig)
+	NewServerConfigInstance.Env = env.Env
 	return NewServerInstance
 }
 
@@ -86,7 +96,7 @@ func (newServer NewServer) GetUriMap(uri string) func() map[string]interface{} {
  */
 func (newServer NewServer) RunServer(configPath string) {
 	//加载配置文件
-	conf.LoadConfigPath(configPath)
+	/*conf.LoadConfigPath(configPath)
 	config, err := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
 	if nil != err {
 		fmt.Println("配置文件 base.yaml 加载失败", err)
@@ -94,14 +104,14 @@ func (newServer NewServer) RunServer(configPath string) {
 	}
 	envConfig := conf_struct.GetBaseYamlConfig(config)
 	NewServerConfigInstance.Env = envConfig.Env
-	fmt.Println("设置运行环境 : " + NewServerConfigInstance.Env)
+	fmt.Println("设置运行环境 : " + NewServerConfigInstance.Env)*/
 
 	fmt.Println("服务器监听端口 " + NewServerConfigInstance.ListenPort)
 	for uri, _ := range NewServerConfigInstance.FuncMap {
 		fmt.Println("注册请求 : " + uri)
 		http.HandleFunc(uri, ResponseData)
 	}
-	err = http.ListenAndServe(NewServerConfigInstance.ListenPort, nil)
+	err := http.ListenAndServe(NewServerConfigInstance.ListenPort, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -119,8 +129,8 @@ func (newServer NewServer) ValidateRequestMethod() {
 /**
  * 创建服务器
  */
-func MakeServer(scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
-	return NewServerInstance.MakeServer(scheme, allowIpList, allowMethod, listenPort)
+func MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
+	return NewServerInstance.MakeServer(configPath, scheme, allowIpList, allowMethod, listenPort)
 }
 
 /**

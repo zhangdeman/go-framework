@@ -33,7 +33,7 @@ func init() {
 		fmt.Println("配置文件 base.yaml 加载失败")
 		os.Exit(-1)
 	}*/
-	fmt.Println(server.NewServerConfigInstance.env)
+	//fmt.Println(server.NewServerConfigInstance.Env, "log init")
 }
 
 func Test() {
