@@ -8,7 +8,7 @@ import (
 )
 
 type LogInterface interface {
-	MakeLog() LogInterface
+	MakeLog(env string) LogInterface
 	Trace(data interface{})
 	Debug(data interface{})
 	Notice(data interface{})
@@ -43,10 +43,9 @@ type Log struct {
 /**
  * 初始化log
  */
-func (log Log) MakeLog() LogInterface  {
-	logDefaultConfig := make(map[string]string)
-	logDefaultConfig["level"] = "1"
+func (log Log) MakeLog(env string) LogInterface  {
 
+	fmt.Println(env)
 	LogConfigInstance = LogConfig{}
 	LogInstance = &Log{}
 	return LogInstance

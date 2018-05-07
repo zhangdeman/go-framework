@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zhangdeman/go-framework/core/conf"
-	//"github.com/zhangdeman/go-framework/core/log"
+	"github.com/zhangdeman/go-framework/core/log"
 	"net/http"
 	"os"
 )
@@ -79,7 +79,7 @@ func (newServer NewServer) MakeServer(configPath string, scheme string, allowIpL
 	NewServerConfigInstance.ConfigPath = configPath
 
 	fmt.Println("初始化日志配置")
-	//log.MakeLog()
+	log.MakeLog(env)
 	return NewServerInstance
 }
 
