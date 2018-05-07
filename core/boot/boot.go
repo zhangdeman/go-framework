@@ -31,7 +31,7 @@ func RunServer(env string, configPath string) {
 	}
 	RunConfigInstance.RunServer = newServer
 	//运行服务器
-	RunConfigInstance.RunServer.RunServer(configPath)
+	RunConfigInstance.RunServer.RunServer(env, configPath)
 }
 
 /**
