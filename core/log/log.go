@@ -1,10 +1,5 @@
 package log
 
-import (
-	"fmt"
-	"github.com/zhangdeman/go-framework/core/server"
-)
-
 type LogInterface interface {
 }
 
