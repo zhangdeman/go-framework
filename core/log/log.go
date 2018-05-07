@@ -109,6 +109,10 @@ func (log Log) IsAllowLog() (bool)  {
 	return true
 }
 
+func MakeLog(env string)  {
+	LogInstance.MakeLog(env)
+}
+
 func Trace(data interface{})  {
 	LogInstance.Trace(data)
 }
