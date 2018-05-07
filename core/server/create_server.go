@@ -1,13 +1,10 @@
 package server
 
 import (
-	conf_struct "config/conf_struct"
 	"errors"
 	"fmt"
-	"github.com/zhangdeman/go-framework/core/conf"
 	"github.com/zhangdeman/go-framework/core/log"
 	"net/http"
-	"os"
 )
 
 /**
@@ -45,7 +42,7 @@ type NewServerConfig struct {
  * 接口
  */
 type NewServerInterface interface {
-	MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer //创建一个服务器
+	MakeServer(env string, configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer //创建一个服务器
 	RunServer(env string, configPath string)                                                                       //运行服务器
 	AddUriMap(uri string, dealFunc func() map[string]interface{})                                      //增加一个请求map
 }
@@ -59,7 +56,7 @@ type NewServer struct {
 /**
  * 创建sever
  */
-func (newServer NewServer) MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
+func (newServer NewServer) MakeServer(env string, configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
 	NewServerConfigInstance.Scheme = scheme
 	NewServerConfigInstance.AllowIpList = allowIpList
 	NewServerConfigInstance.AllowMethod = allowMethod
@@ -68,14 +65,7 @@ func (newServer NewServer) MakeServer(configPath string, scheme string, allowIpL
 	NewServerConfigInstance.FuncMap = mapFunc
 
 	//设置运行环境
-	conf.LoadConfigPath(configPath)
-	envConfig , err := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
-	if nil != err {
-		fmt.Println("base..yaml配置初始化失败", err)
-		os.Exit(-1)
-	}
-	env := conf_struct.GetBaseYamlConfig(envConfig)
-	NewServerConfigInstance.Env = env.Env
+	NewServerConfigInstance.Env = env
 	NewServerConfigInstance.ConfigPath = configPath
 
 	fmt.Println("初始化日志配置")
@@ -125,8 +115,8 @@ func (newServer NewServer) ValidateRequestMethod() {
 /**
  * 创建服务器
  */
-func MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
-	return NewServerInstance.MakeServer(configPath, scheme, allowIpList, allowMethod, listenPort)
+func MakeServer(env string, configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer {
+	return NewServerInstance.MakeServer(env, configPath, scheme, allowIpList, allowMethod, listenPort)
 }
 
 /**

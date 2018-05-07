@@ -23,7 +23,7 @@ func init() {
 func RunServer(env string, configPath string) {
 	RunConfigInstance = RunConfig{}
 	//初始化服务器
-	newServer := server.MakeServer(configPath, "http", []string{}, []string{}, "8990")
+	newServer := server.MakeServer(env, configPath, "http", []string{}, []string{}, "8990")
 	fmt.Println(newServer)
 	//初始化配置
 	for uri, method := range router.RouterMap {

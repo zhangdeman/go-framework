@@ -45,10 +45,12 @@ type Log struct {
  */
 func (log Log) MakeLog(env string) LogInterface  {
 
-	fmt.Println(env)
-	LogConfigInstance = LogConfig{}
+	fmt.Println("运行环境 : zhang", env)
+	/*LogConfigInstance = LogConfig{}
 	LogInstance = &Log{}
-	return LogInstance
+	LogConfigInstance.LogEnv = env
+	return LogInstance*/
+	return  nil
 }
 
 /**
@@ -109,8 +111,9 @@ func (log Log) IsAllowLog() (bool)  {
 	return true
 }
 
-func MakeLog(env string)  {
-	LogInstance.MakeLog(env)
+func MakeLog(env string) LogInterface  {
+	fmt.Println("debug env", env)
+	return LogInstance.MakeLog(env)
 }
 
 func Trace(data interface{})  {
