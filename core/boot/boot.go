@@ -20,7 +20,7 @@ func init() {
 /**
  * 运行服务器
  */
-func RunServer(configPath string) {
+func RunServer(env string, configPath string) {
 	RunConfigInstance = RunConfig{}
 	//初始化服务器
 	newServer := server.MakeServer(configPath, "http", []string{}, []string{}, "8990")

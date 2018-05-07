@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zhangdeman/go-framework/core/conf"
+	//"github.com/zhangdeman/go-framework/core/log"
 	"net/http"
 	"os"
 )
@@ -37,6 +38,7 @@ type NewServerConfig struct {
 	ListenPort  string                                   //监听的端口
 	Env         string                                   //运行环境
 	FuncMap     map[string]func() map[string]interface{} //监听的方法
+	ConfigPath  string									 //配置路径
 }
 
 /**
@@ -44,7 +46,7 @@ type NewServerConfig struct {
  */
 type NewServerInterface interface {
 	MakeServer(configPath string, scheme string, allowIpList []string, allowMethod []string, listenPort string) NewServer //创建一个服务器
-	RunServer(configPath string)                                                                       //运行服务器
+	RunServer(env string, configPath string)                                                                       //运行服务器
 	AddUriMap(uri string, dealFunc func() map[string]interface{})                                      //增加一个请求map
 }
 
@@ -74,6 +76,10 @@ func (newServer NewServer) MakeServer(configPath string, scheme string, allowIpL
 	}
 	env := conf_struct.GetBaseYamlConfig(envConfig)
 	NewServerConfigInstance.Env = env.Env
+	NewServerConfigInstance.ConfigPath = configPath
+
+	fmt.Println("初始化日志配置")
+	//log.MakeLog()
 	return NewServerInstance
 }
 
@@ -94,18 +100,8 @@ func (newServer NewServer) GetUriMap(uri string) func() map[string]interface{} {
 /**
  * 运行server
  */
-func (newServer NewServer) RunServer(configPath string) {
-	//加载配置文件
-	/*conf.LoadConfigPath(configPath)
-	config, err := conf.LoadConfig("base.yaml", &conf_struct.BaseYaml{})
-	if nil != err {
-		fmt.Println("配置文件 base.yaml 加载失败", err)
-		os.Exit(-1)
-	}
-	envConfig := conf_struct.GetBaseYamlConfig(config)
-	NewServerConfigInstance.Env = envConfig.Env
-	fmt.Println("设置运行环境 : " + NewServerConfigInstance.Env)*/
-
+func (newServer NewServer) RunServer(env string, configPath string) {
+	NewServerConfigInstance.Env = env
 	fmt.Println("服务器监听端口 " + NewServerConfigInstance.ListenPort)
 	for uri, _ := range NewServerConfigInstance.FuncMap {
 		fmt.Println("注册请求 : " + uri)
@@ -136,8 +132,8 @@ func MakeServer(configPath string, scheme string, allowIpList []string, allowMet
 /**
  * 运行服务器
  */
-func RunServer(configPath string) {
-	NewServerInstance.RunServer(configPath)
+func RunServer(env string, configPath string) {
+	NewServerInstance.RunServer(env, configPath)
 }
 
 /**
